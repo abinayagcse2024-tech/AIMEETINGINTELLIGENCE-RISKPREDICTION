@@ -6,7 +6,13 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const saved = sessionStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
+    if (!saved || saved === 'undefined') return null;
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to parse user from session storage:', e);
+      return null;
+    }
   });
   const [token, setToken] = useState(() => sessionStorage.getItem('token'));
   const [loading, setLoading] = useState(false);
