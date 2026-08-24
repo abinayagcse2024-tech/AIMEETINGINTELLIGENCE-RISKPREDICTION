@@ -1,7 +1,13 @@
 import os
 import pickle
+import warnings
 import numpy as np
 import pandas as pd
+
+# Suppress harmless scikit-learn version mismatch warnings during pickle load
+warnings.filterwarnings("ignore", message=".*unpickle estimator.*")
+warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
+
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
