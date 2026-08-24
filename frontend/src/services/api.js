@@ -50,7 +50,6 @@ export const api = {
   // Module 1: Auth & Roles
   auth: {
     login: (email, password) => request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
-    googleLogin: (credential) => request('/auth/google', { method: 'POST', body: JSON.stringify({ credential }) }),
     register: (userData) => request('/auth/register', { method: 'POST', body: JSON.stringify(userData) }),
     getMe: () => request('/auth/me'),
     logout: () => request('/auth/logout', { method: 'POST' }),

@@ -56,11 +56,6 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.removeItem('user');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    
-    // Remove Google authentication tokens and cookies if they exist
-    localStorage.removeItem('google_token');
-    sessionStorage.removeItem('google_token');
-    document.cookie = "g_state=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   };
 
   const updateUser = (updatedData) => {
@@ -72,24 +67,10 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
-  const googleLogin = async (credential) => {
-    setLoading(true);
-    try {
-      const res = await api.auth.googleLogin(credential);
-      setToken(res.access_token);
-      setUser(res.user);
-      sessionStorage.setItem('token', res.access_token);
-      sessionStorage.setItem('user', JSON.stringify(res.user));
-      localStorage.setItem('token', res.access_token);
-      localStorage.setItem('user', JSON.stringify(res.user));
-      return res.user;
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, googleLogin, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
