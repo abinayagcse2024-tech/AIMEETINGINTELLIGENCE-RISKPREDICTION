@@ -48,12 +48,6 @@ try:
 except Exception as e:
     print(f"Warning checking admin user: {e}")
 
-# Pre-train / load ML model
-try:
-    risk_predictor._load_or_train()
-except Exception as e:
-    print(f"Warning initializing ML model: {e}")
-
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description="Full-Stack AI Meeting Intelligence Platform with 17 Modules (Speech-to-Text, NLP, ML Risk Prediction, Agentic Automation, n8n)",
@@ -61,6 +55,14 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+@app.on_event("startup")
+def startup_event():
+    # Pre-train / load ML model on startup
+    try:
+        risk_predictor._load_or_train()
+    except Exception as e:
+        print(f"Warning initializing ML model: {e}")
 
 # Configure CORS
 app.add_middleware(
