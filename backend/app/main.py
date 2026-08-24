@@ -35,7 +35,7 @@ try:
             name="System Admin",
             email="admin@meetintel.ai",
             hashed_password=get_password_hash("password123"),
-            role="user",
+            role="admin",
             job_title="Lead Administrator",
             department="Operations",
             avatar_url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
@@ -65,7 +65,8 @@ app = FastAPI(
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"], # Explicit origins required for credentials
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origin_regex=r"https://.*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

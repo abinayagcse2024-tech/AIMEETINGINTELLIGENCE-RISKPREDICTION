@@ -230,6 +230,9 @@ Please prioritize or request workload rebalancing immediately.
         </div>
         """
 
+        notes_str = f"NOTES:\n{notes}\n" if notes else ""
+        url_str = f"MEETING LINK:\n{meeting_url}\n" if meeting_url else ""
+
         body_text = f"""
 [RESCHEDULED SESSION] {meeting_title}
 New Time: {new_start_time_str}
@@ -244,9 +247,7 @@ Location: {location or 'Online (AI Workspace)'}
 REASON:
 {reason}
 
-{f"NOTES:\n{notes}\n" if notes else ""}
-{f"MEETING LINK:\n{meeting_url}\n" if meeting_url else ""}
-==================================================
+{notes_str}{url_str}==================================================
 Please update your calendar accordingly.
 """
 
