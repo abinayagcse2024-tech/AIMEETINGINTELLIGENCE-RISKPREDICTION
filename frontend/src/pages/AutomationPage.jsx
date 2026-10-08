@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Server, Play, Clock, CheckCircle2, AlertCircle, RefreshCw, Send, CalendarDays } from 'lucide-react';
+import { RefreshCw, CalendarDays } from 'lucide-react';
 import { api } from '../services/api';
 import { AgenticAutomationPanel } from '../components/AgenticAutomationPanel';
 

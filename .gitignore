@@ -13,6 +13,15 @@ env/
 .env
 .env.local
 
-# Build outputs
+# Build outputs & Logs
 dist/
 build/
+*.log
+frontend_log.txt
+
+# Databases & Uploads
+*.db
+backend/uploads/
+scratch/
+*.png
+

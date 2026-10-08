@@ -3,15 +3,25 @@ import sys
 from datetime import datetime, timedelta, timezone
 
 # Add backend directory to sys.path
-sys.path.insert(0, r"c:\Users\abina\OneDrive\Desktop\MINI PROJECT\backend")
+backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend"))
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
 
 from fastapi.testclient import TestClient
-from app.main import app
-from app.core.database import SessionLocal
-from app.models.user import User
-from app.models.meeting import Meeting
-from app.models.participant import Participant
-from app.core.security import create_access_token
+try:
+    from app.main import app
+    from app.core.database import SessionLocal
+    from app.models.user import User
+    from app.models.meeting import Meeting
+    from app.models.participant import Participant
+    from app.core.security import create_access_token
+except ImportError:
+    from backend.app.main import app # type: ignore
+    from backend.app.core.database import SessionLocal # type: ignore
+    from backend.app.models.user import User # type: ignore
+    from backend.app.models.meeting import Meeting # type: ignore
+    from backend.app.models.participant import Participant # type: ignore
+    from backend.app.core.security import create_access_token # type: ignore
 
 client = TestClient(app)
 
@@ -37,7 +47,17 @@ def run_tests():
 
         # Find or create a test meeting
         test_meeting = db.query(Meeting).first()
-        assert test_meeting is not None, "No meetings found in database!"
+        if not test_meeting:
+            test_meeting = Meeting(
+                title="Sprint Reschedule Test Meeting",
+                description="Test description",
+                scheduled_start=datetime.now(timezone.utc) - timedelta(hours=2),
+                status="completed",
+                host_id=admin.id
+            )
+            db.add(test_meeting)
+            db.commit()
+            db.refresh(test_meeting)
         meeting_id = test_meeting.id
 
         # 2. Test PUT attendance
@@ -91,7 +111,7 @@ def run_tests():
         assert "missed_meetings" in dash_data, "missed_meetings key missing from dashboard summary!"
         print(f"[PASS] GET /dashboard/summary contains missed_meetings: {dash_data['missed_meetings']}")
 
-        print("\n🎉 ALL RESCHEDULE & MISSED MEETING ENDPOINT TESTS PASSED SUCCESSFULLY!")
+        print("\n[SUCCESS] ALL RESCHEDULE & MISSED MEETING ENDPOINT TESTS PASSED SUCCESSFULLY!")
 
     finally:
         db.close()

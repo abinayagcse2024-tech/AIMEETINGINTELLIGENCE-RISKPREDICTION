@@ -1,4 +1,4 @@
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'https://aimeetingintelligence-riskprediction-1.onrender.com/api/v1').replace(/\/$/, '');
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1').replace(/\/$/, '');
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('token');
@@ -13,10 +13,18 @@ async function request(endpoint, options = {}) {
     delete headers['Content-Type'];
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  let response;
+  try {
+    response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+    });
+  } catch (netErr) {
+    if (netErr.name === 'TypeError' || netErr.message.includes('fetch')) {
+      throw new Error(`Cannot connect to AI Meeting Backend API at ${API_BASE_URL}. Please start the backend server.`);
+    }
+    throw netErr;
+  }
 
   if (response.status === 401) {
     // If unauthorized and not on login/register, clear token

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from app.core.database import get_db
 from app.core.security import verify_password, get_password_hash, create_access_token, get_current_user
 from app.models.user import User
@@ -63,7 +64,8 @@ def register_user(user_in: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == login_data.email).first()
+    clean_email = login_data.email.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == clean_email).first()
     if not user or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -172,7 +174,8 @@ def logout_user():
 
 @router.post("/forgot-password")
 def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == request.email).first()
+    clean_email = request.email.strip().lower()
+    user = db.query(User).filter(func.lower(User.email) == clean_email).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -183,13 +186,13 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
     token = "".join(random.choices("0123456789", k=6))
     
     # Save token in-memory with a 15-minute expiration
-    reset_tokens[request.email] = {
+    reset_tokens[clean_email] = {
         "token": token,
         "expires": datetime.now(timezone.utc) + timedelta(minutes=15)
     }
     
     # In development/local env, print to terminal and also return it in the response for convenience
-    print(f"\n===================================================\n[PASSWORD RESET] Code for {request.email}: {token}\n===================================================\n")
+    print(f"\n===================================================\n[PASSWORD RESET] Code for {clean_email}: {token}\n===================================================\n")
     
     return {
         "success": True, 
@@ -200,8 +203,9 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
 
 @router.post("/reset-password")
 def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db)):
+    clean_email = request.email.strip().lower()
     # Verify token exists and is valid
-    stored_info = reset_tokens.get(request.email)
+    stored_info = reset_tokens.get(clean_email)
     if not stored_info:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -210,7 +214,7 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
     
     # Check expiration
     if datetime.now(timezone.utc) > stored_info["expires"]:
-        reset_tokens.pop(request.email, None)
+        reset_tokens.pop(clean_email, None)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Reset code has expired. Please request a new one."
@@ -224,7 +228,7 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
         )
     
     # Update user's password
-    user = db.query(User).filter(User.email == request.email).first()
+    user = db.query(User).filter(func.lower(User.email) == clean_email).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -235,7 +239,7 @@ def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db))
     db.commit()
     
     # Clean up the used token
-    reset_tokens.pop(request.email, None)
+    reset_tokens.pop(clean_email, None)
     
     return {
         "success": True,

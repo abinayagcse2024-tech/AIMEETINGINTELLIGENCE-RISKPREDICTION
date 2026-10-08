@@ -29,7 +29,7 @@ def reset_to_clean_state():
             name="System Admin",
             email="admin@meetintel.ai",
             hashed_password=get_password_hash("password123"),
-            role="user",
+            role="admin",
             job_title="Lead Administrator",
             department="Operations",
             avatar_url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",

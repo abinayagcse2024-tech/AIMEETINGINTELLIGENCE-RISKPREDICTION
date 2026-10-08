@@ -79,11 +79,12 @@ def test_realtime_workflow():
     tr_res = client.get(f"/api/v1/transcription/meeting/{meeting_id}", headers=headers)
     assert tr_res.status_code == 200
     tr_data = tr_res.json()
-    assert len(tr_data["segments"]) == 3
-    assert tr_data["segments"][0]["speaker_label"] == "System Admin"
-    assert tr_data["segments"][1]["speaker_label"] == "Sarah Chen"
-    assert tr_data["segments"][2]["speaker_label"] == "Marcus Vance"
-    print(f"  [SUCCESS] Transcribed {len(tr_data['segments'])} real speaker turns accurately.")
+    segments = tr_data["segments"]["data"] if isinstance(tr_data["segments"], dict) else tr_data["segments"]
+    assert len(segments) == 3, f"Expected 3 segments, got {len(segments)}"
+    assert segments[0]["speaker_label"] == "System Admin"
+    assert segments[1]["speaker_label"] == "Sarah Chen"
+    assert segments[2]["speaker_label"] == "Marcus Vance"
+    print(f"  [SUCCESS] Transcribed {len(segments)} real speaker turns accurately.")
 
     # 6. Verify real AI summary & decisions & tasks
     print("[TEST] 7. Verifying dynamic NLP extraction from real speech...")
@@ -101,7 +102,8 @@ def test_realtime_workflow():
 
     tasks_res = client.get(f"/api/v1/tasks/?meeting_id={meeting_id}", headers=headers)
     assert tasks_res.status_code == 200
-    tasks = tasks_res.json()
+    tasks_json = tasks_res.json()
+    tasks = tasks_json["data"] if isinstance(tasks_json, dict) and "data" in tasks_json else tasks_json
     assert len(tasks) >= 1
     assert "implement" in tasks[0]["title"].lower() or "redis" in tasks[0]["title"].lower()
     print(f"  [SUCCESS] Extracted Task: \"{tasks[0]['title']}\" -> Assignee: {tasks[0]['assignee_name']} | ML Risk: {tasks[0]['risk_level'].upper()} ({int(tasks[0]['risk_score']*100)}%)")

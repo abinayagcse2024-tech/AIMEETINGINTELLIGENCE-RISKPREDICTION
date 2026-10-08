@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CheckSquare, ListFilter, AlertTriangle, ShieldAlert, Sparkles, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { api } from '../services/api';
 import { TaskKanban } from '../components/TaskKanban';
 import { RiskBadge } from '../components/RiskBadge';

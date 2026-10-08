@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, Sparkles, Plus, CheckCircle2, Clock, AlertTriangle, Maximize, Minimize, RefreshCw } from 'lucide-react';
+import { Search, Bell, Sparkles, Plus, CheckCircle2, Clock, AlertTriangle, Maximize, Minimize, RefreshCw, QrCode, X, Download, Smartphone } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 import { useAuth } from '../context/AuthContext';
 import { Pagination } from './Pagination';
@@ -11,6 +11,7 @@ export const Header = () => {
   const { notifications, unreadCount, isOpen, setIsOpen, markAsRead, markAllAsRead, triggerDemoAlerts, page, setPage, totalPages, totalItems } = useNotifications();
   const [searchQuery, setSearchQuery] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -92,6 +93,27 @@ export const Header = () => {
             <span>New Meeting</span>
           </button>
         )}
+
+        {/* Project QR Code Button */}
+        <button
+          onClick={() => setIsQrModalOpen(true)}
+          title="Project QR Code / Mobile Scan"
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            background: isQrModalOpen ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+            border: isQrModalOpen ? '1px solid rgba(56, 189, 248, 0.5)' : '1px solid var(--border-glass)',
+            color: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+        >
+          <QrCode size={18} color="#38bdf8" />
+        </button>
 
         {/* Global Fullscreen Toggle Button */}
         <button
@@ -246,6 +268,112 @@ export const Header = () => {
           )}
         </div>
       </div>
+
+      {/* Project QR Code Modal */}
+      {isQrModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(5, 8, 16, 0.85)',
+          backdropFilter: 'blur(10px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: 'linear-gradient(145deg, #0f172a, #1e293b)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '20px',
+            width: '420px',
+            padding: '28px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+            textAlign: 'center',
+            position: 'relative'
+          }}>
+            <button
+              onClick={() => setIsQrModalOpen(false)}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ display: 'inline-flex', padding: '12px', background: 'rgba(56, 189, 248, 0.1)', borderRadius: '16px', marginBottom: '16px' }}>
+              <QrCode size={36} color="#38bdf8" />
+            </div>
+
+            <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#f8fafc', marginBottom: '6px' }}>
+              Project QR Code
+            </h3>
+            <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px', lineHeight: 1.5 }}>
+              Scan with your smartphone camera to access <strong>MeetIntel AI</strong> platform.
+            </p>
+
+            <div style={{
+              background: '#ffffff',
+              padding: '16px',
+              borderRadius: '16px',
+              display: 'inline-block',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
+              marginBottom: '20px'
+            }}>
+              <img
+                src="/project_qr.png"
+                alt="AI Meeting Intelligence QR Code"
+                style={{ width: '200px', height: '200px', display: 'block', borderRadius: '8px' }}
+              />
+            </div>
+
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '12px',
+              padding: '12px',
+              fontSize: '12px',
+              color: '#cbd5e1',
+              marginBottom: '20px',
+              wordBreak: 'break-all'
+            }}>
+              <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '13px' }}>
+                <Smartphone size={15} /> Mobile Wi-Fi URL: http://10.139.135.195:5173
+              </div>
+              <div style={{ color: '#94a3b8', fontSize: '11px' }}>Computer PC URL: http://localhost:5173</div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <a
+                href="/project_qr.png"
+                download="MeetIntel_AI_Project_QR.png"
+                className="btn-primary"
+                style={{ flex: 1, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 16px', fontSize: '13px', borderRadius: '12px' }}
+              >
+                <Download size={16} />
+                <span>Download Image</span>
+              </a>
+              <button
+                onClick={() => setIsQrModalOpen(false)}
+                style={{ padding: '10px 20px', fontSize: '13px', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.08)', border: '1px solid rgba(255, 255, 255, 0.15)', color: '#ffffff', cursor: 'pointer' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
