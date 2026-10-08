@@ -349,7 +349,7 @@ export const Header = () => {
               wordBreak: 'break-all'
             }}>
               <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '13px' }}>
-                <Smartphone size={15} /> Mobile Wi-Fi URL: http://10.139.135.195:5173
+                <Smartphone size={15} /> Mobile Wi-Fi URL: http://10.58.38.195:5173
               </div>
               <div style={{ color: '#94a3b8', fontSize: '11px' }}>Computer PC URL: http://localhost:5173</div>
             </div>
